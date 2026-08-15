@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusConnect - Login & Register</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0f0f0f; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem; }
+        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 2.5rem; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        h1 { font-size: 1.8rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; }
+        p { color: #b0b0d0; font-size: 0.85rem; text-align: center; margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; font-size: 0.8rem; color: #b0b0d0; margin-bottom: 5px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: white; font-size: 0.95rem; }
+        input:focus, select:focus { outline: none; border-color: #00d9ff; }
+        .btn-container { display: flex; gap: 10px; margin-top: 1.2rem; }
+        .btn { flex: 1; padding: 0.8rem; border: none; border-radius: 0.5rem; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
+        .btn-signin { background: linear-gradient(135deg, #00d9ff, #a855f7); color: #0f0f0f; }
+        .btn-register { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .msg-box { font-size: 0.8rem; text-align: center; margin-top: 15px; display: none; }
+        .error-msg { color: #ff006e; } .success-msg { color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>CampusConnect</h1>
+        <p>Maharaja Agrasen Institute of Technology</p>
+        <form id="authForm">
+            <div class="form-group" id="nameGroup" style="display: none;">
+                <label>Full Name</label>
+                <input type="text" id="userName" placeholder="Enter your name">
+            </div>
+            <div class="form-group"><label>Email Address</label><input type="email" id="userEmail" placeholder="e.g. shubham11tha@gmail.com" required></div>
+            <div class="form-group"><label>Password</label><input type="password" id="userPassword" placeholder="Enter password" required></div>
+            <div class="form-group"><label>Select Role</label><select id="userRole" required><option value="">Choose Role</option><option value="student">Student</option><option value="organizer">Organizer</option><option value="admin">Admin</option></select></div>
+            <div class="btn-container"><button type="button" class="btn btn-signin" onclick="handleAuth('signin')">Sign In</button><button type="button" class="btn btn-register" onclick="handleRegisterClick()">Create Account</button></div>
+            <div class="msg-box" id="msgBox"></div>
+        </form>
+    </div>
+    <script>
+        // LIVE SERVER FIX: Removed localhost
+        const API_BASE = '/api';
+
+        function handleRegisterClick() {
+            const nameGroup = document.getElementById('nameGroup');
+            if (nameGroup.style.display === 'none') { nameGroup.style.display = 'block'; showMsg('Please enter your Full Name to create an account.', 'error'); return; }
+            handleAuth('register');
+        }
+        async function handleAuth(action) {
+            const name = document.getElementById('userName').value.trim(); const email = document.getElementById('userEmail').value.trim(); const password = document.getElementById('userPassword').value; const role = document.getElementById('userRole').value; const msgBox = document.getElementById('msgBox');
+            msgBox.style.display = 'none';
+            if (!email || !password || !role) { showMsg('Please fill in Email, Password and Role.', 'error'); return; }
+            if (action === 'register' && !name) { showMsg('Please provide your Full Name.', 'error'); return; }
+            const payload = action === 'register' ? { name, email, password, role } : { email, password };
+            try {
+                const response = await fetch(action === 'register' ? `${API_BASE}/register` : `${API_BASE}/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await response.json();
+                if (response.ok) {
+                    if (data.user) { localStorage.setItem('campusConnectUser', JSON.stringify(data.user)); showMsg('Success! Redirecting...', 'success'); setTimeout(() => { window.location.href = 'dashboard.html'; }, 800); }
+                    else if (data.pendingApproval) { showMsg(data.message, 'success'); } else { showMsg(data.message, 'success'); }
+                } else { showMsg(data.error || 'Authentication failed.', 'error'); }
+            } catch (err) { showMsg('Server connection error. Ensure server.js is running.', 'error'); }
+        }
+        function showMsg(text, type) { const msgBox = document.getElementById('msgBox'); msgBox.textContent = text; msgBox.className = `msg-box ${type === 'error' ? 'error-msg' : 'success-msg'}`; msgBox.style.display = 'block'; }
+    </script>
+</body>
+</html>
