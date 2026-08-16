@@ -55,6 +55,18 @@
         label { display: block; font-size: 0.8rem; color: #b0b0d0; margin-bottom: 5px; }
         input, select, textarea { width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: white; margin-bottom: 10px;}
         .btn-submit { width: 100%; padding: 12px; background: linear-gradient(135deg, #00d9ff, #a855f7); color: #0f0f0f; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; }
+
+        /* --- MOBILE RESPONSIVE MEDIA QUERY --- */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .navbar { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .user-info { width: 100%; justify-content: space-between; }
+            .stats-container { grid-template-columns: 1fr !important; gap: 1rem; }
+            .dashboard-grid { grid-template-columns: 1fr !important; gap: 1rem; }
+            .card { grid-column: span 1 !important; }
+            .list-item { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .action-buttons { width: 100%; flex-direction: row; justify-content: flex-end; flex-wrap: wrap; }
+        }
     </style>
 </head>
 <body>
@@ -157,7 +169,7 @@
             currentUser = JSON.parse(userStr);
             document.getElementById('displayUserName').textContent = currentUser.name;
             
-            // Strictly set Super Admin role text if email matches root email
+            // Secure Root Check via specific email only
             const isRoot = currentUser.email === 'shubham11tha@gmail.com';
             document.getElementById('displayUserRole').textContent = isRoot ? 'SUPER ADMIN' : currentUser.role;
             
@@ -168,7 +180,7 @@
             if (currentUser.role === 'student') loadStudentData();
         }
 
-        // 2. ADMIN CORE LOGIC (Strict Approval System & Root Security)
+        // 2. ADMIN CORE LOGIC
         async function loadAdminData() {
             try {
                 const statsRes = await fetch(`${API_BASE}/admin/stats`);
