@@ -156,7 +156,10 @@
             }
             currentUser = JSON.parse(userStr);
             document.getElementById('displayUserName').textContent = currentUser.name;
-            document.getElementById('displayUserRole').textContent = currentUser.role === 'admin' ? 'SUPER ADMIN' : currentUser.role;
+            
+            // Strictly set Super Admin role text if email matches root email
+            const isRoot = currentUser.email === 'shubham11tha@gmail.com';
+            document.getElementById('displayUserRole').textContent = isRoot ? 'SUPER ADMIN' : currentUser.role;
             
             document.getElementById(`${currentUser.role}Panel`).classList.add('active-panel');
 
@@ -165,17 +168,15 @@
             if (currentUser.role === 'student') loadStudentData();
         }
 
-        // 2. ADMIN CORE LOGIC (Perfected Approval System)
+        // 2. ADMIN CORE LOGIC (Strict Approval System & Root Security)
         async function loadAdminData() {
             try {
-                // Load Stats
                 const statsRes = await fetch(`${API_BASE}/admin/stats`);
                 const stats = await statsRes.json();
                 document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
                 document.getElementById('totalEvents').textContent = stats.totalEvents || 0;
                 document.getElementById('totalRegistrations').textContent = stats.totalRegistrations || 0;
 
-                // Load Users
                 const usersRes = await fetch(`${API_BASE}/admin/all-users`);
                 const users = await usersRes.json();
                 
@@ -187,23 +188,20 @@
 
                 users.forEach(u => {
                     const isApproved = u.is_approved === 1;
-                    const isRoot = u.email === 'shubham11tha@gmail.com' || u.id === 1;
+                    const isRootUser = u.email === 'shubham11tha@gmail.com';
 
                     let statusBadge = '';
                     let actionBtns = '';
 
-                    // PERFECT COORDINATION LOGIC:
-                    if (isRoot) {
+                    if (isRootUser) {
                         statusBadge = `<span style="color: #a855f7; font-weight: bold;">SUPER ADMIN</span>`;
                     } else if (!isApproved) {
-                        // Pending Users
                         statusBadge = `<span style="color: #ffcc00; font-weight: bold;">⚠️ Pending Approval</span>`;
                         actionBtns = `
                             <button class="btn-action btn-success" onclick="approveUser(${u.id})">APPROVE</button>
                             <button class="btn-action btn-danger" onclick="kickUser(${u.id})">REJECT</button>
                         `;
                     } else {
-                        // Active Users
                         statusBadge = `<span style="color: #10b981;">Active ${u.role}</span>`;
                         if (u.role !== 'admin') actionBtns += `<button class="btn-action" style="background:#a855f7" onclick="promoteRole(${u.id}, 'admin')">MAKE ADMIN</button>`;
                         if (u.role !== 'organizer') actionBtns += `<button class="btn-action" style="background:#f59e0b" onclick="promoteRole(${u.id}, 'organizer')">MAKE ORG</button>`;
@@ -211,7 +209,6 @@
                         actionBtns += `<button class="btn-action btn-danger" onclick="kickUser(${u.id})">KICK</button>`;
                     }
 
-                    // Render All Users
                     allUsersList.innerHTML += `
                         <div class="list-item">
                             <div>
@@ -222,7 +219,6 @@
                         </div>
                     `;
 
-                    // Render Active Organizers ONLY
                     if (u.role === 'organizer' && isApproved) {
                         organizersList.innerHTML += `
                             <div class="list-item">
