@@ -8,8 +8,13 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static frontend files
+// Serve static frontend files (Correct path from backend folder)
 app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Fallback to frontend login.html
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/login.html'));
+});
 
 // PostgreSQL Cloud Database Connection (Neon)
 const pool = new Pool({

@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "Event Management System",
   "main": "backend/server.js",
-  "scripts": {
-    "start": "node backend/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+"scripts": {
+  "start": "node backend/server.js"
+}
   "engines": {
     "node": "18.x"
   },
