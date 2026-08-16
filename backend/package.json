@@ -1,18 +1,15 @@
 {
   "name": "campusconnect",
   "version": "1.0.0",
-  "description": "Event Management System",
+  "description": "Campus Event Management Platform",
   "main": "backend/server.js",
-"scripts": {
-  "start": "node backend/server.js"
-}
-  "engines": {
-    "node": "18.x"
+  "scripts": {
+    "start": "node backend/server.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "express": "^4.21.0",
+    "express": "^4.19.2",
     "pg": "^8.11.3"
   }
 }
