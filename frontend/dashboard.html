@@ -3,439 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CampusConnect - Premium Dashboard</title>
+    <title>CampusConnect - Dashboard</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --bg-primary: #0a0a0f; --bg-secondary: rgba(26, 26, 46, 0.7);
-            --border-color: rgba(255, 255, 255, 0.1); --text-primary: #ffffff;
-            --text-secondary: #9ca3af; --accent-blue: #00f2fe; --accent-purple: #4facfe;
-            --accent-pink: #ff0844; --accent-green: #0ba360; --accent-warn: #f59e0b; --accent-yellow: #fcd34d;
-            --gradient-primary: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            --gradient-danger: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
-            --gradient-success: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
-            --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        body {
-            background-color: var(--bg-primary); color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            min-height: 100vh; overflow-x: hidden;
-        }
-
-        body::before {
-            content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(79, 172, 254, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(255, 8, 68, 0.08) 0%, transparent 40%);
-            z-index: -1; animation: rotateBg 30s linear infinite;
-        }
-        @keyframes rotateBg { 100% { transform: rotate(360deg); } }
-
-        .header {
-            background: rgba(10, 10, 15, 0.8); backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color); padding: 1.2rem 2.5rem;
-            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;
-        }
-        .header-left h1 { font-size: 1.8rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -0.5px; }
-        .header-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+        body { background: #0f0f0f; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 2rem; }
         
-        .user-profile { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.03); padding: 8px 20px; border-radius: 30px; border: 1px solid var(--border-color); }
-        .user-role-badge { background: rgba(0, 242, 254, 0.15); color: var(--accent-blue); padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        /* Navbar */
+        .navbar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; margin-bottom: 2rem; }
+        .logo-section h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-section p { color: #b0b0d0; font-size: 0.85rem; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-pill { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; text-align: right; }
+        .user-name { font-weight: bold; font-size: 0.9rem; }
+        .user-role { font-size: 0.75rem; color: #00d9ff; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
+        .btn-logout { background: transparent; color: #ff006e; border: 1px solid #ff006e; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-logout:hover { background: #ff006e; color: white; }
 
-        .logout-btn { background: transparent; border: 1px solid var(--accent-pink); color: var(--accent-pink); padding: 8px 20px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; font-size: 0.8rem; }
-        .logout-btn:hover { background: var(--gradient-danger); color: white; border-color: transparent; box-shadow: 0 0 15px rgba(255, 8, 68, 0.4); transform: translateY(-2px); }
-
-        .container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
-        .dashboard-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
+        /* Panels */
+        .panel { display: none; }
+        .active-panel { display: block; }
         
-        .grid-item {
-            background: var(--bg-secondary); backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color); border-radius: 20px; padding: 1.8rem;
-            box-shadow: var(--card-shadow); transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px);
-        }
-        .grid-item:hover { transform: translateY(-5px); border-color: rgba(0, 242, 254, 0.3); box-shadow: 0 10px 40px rgba(0, 242, 254, 0.1); }
-        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        /* Stats Grid */
+        .stats-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 2rem; text-align: center; }
+        .stat-card h2 { font-size: 3rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-card p { color: #b0b0d0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
 
-        .col-3 { grid-column: span 3; } .col-4 { grid-column: span 4; } .col-6 { grid-column: span 6; } .col-12 { grid-column: span 12; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .card-title { font-size: 1.1rem; font-weight: 600; color: #fff; letter-spacing: 0.5px; }
-        .card-value { font-size: 2.8rem; font-weight: 800; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* Dashboard Grid */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.5rem; }
+        .card h3 { margin-bottom: 1.5rem; color: #e2e8f0; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
 
-        .btn { padding: 10px 20px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-primary { background: var(--gradient-primary); color: #000; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3); width: 100%; }
-        .btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 20px rgba(0, 242, 254, 0.5); }
+        /* Lists */
+        .list-container { max-height: 400px; overflow-y: auto; padding-right: 5px; }
+        .list-container::-webkit-scrollbar { width: 5px; }
+        .list-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
         
-        .btn-sm { padding: 6px 12px; font-size: 0.75rem; border-radius: 8px; color: white; width: auto; }
-        .btn-approve { background: var(--gradient-success); }
-        .btn-admin { background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); }
-        .btn-danger { background: var(--gradient-danger); }
-        .btn-info { background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); color: #000; }
-        .btn-warn { background: var(--accent-warn); color: #fff; }
+        .list-item { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .list-item h4 { color: #fff; margin-bottom: 5px; }
+        .list-item p { color: #b0b0d0; font-size: 0.85rem; margin-bottom: 5px; line-height: 1.4; }
         
-        .btn-sm:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 4px 10px rgba(255,255,255,0.1); }
-
-        .scrollable-list { max-height: 350px; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 12px; }
-        .scrollable-list::-webkit-scrollbar { width: 6px; }
-        .scrollable-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
-        .scrollable-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-        .scrollable-list::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
-
-        .list-item { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; }
-        .list-item:hover { background: rgba(0, 242, 254, 0.05); border-color: rgba(0, 242, 254, 0.2); transform: translateX(5px); }
-        .item-title { font-size: 1rem; font-weight: 600; margin-bottom: 5px; color: #fff; }
-        .item-meta { font-size: 0.8rem; color: var(--text-secondary); display: flex; gap: 12px; flex-wrap: wrap; }
-        .item-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-
-        .tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; margin-left: 8px; font-weight: 600; text-transform: uppercase; }
-        .tag-coding { background: rgba(0, 242, 254, 0.1); color: var(--accent-blue); border: 1px solid rgba(0,242,254,0.3); }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-content { background: rgba(20, 20, 30, 0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; width: 100%; max-width: 480px; transform: scale(0.9); transition: all 0.3s ease; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; }
-        .modal-overlay.active .modal-content { transform: scale(1); }
+        /* Buttons */
+        .action-buttons { display: flex; flex-direction: column; gap: 8px; }
+        .btn-action { padding: 6px 12px; border: none; border-radius: 5px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: 0.2s; color: white; text-transform: uppercase; }
+        .btn-action:hover { opacity: 0.8; }
+        .btn-danger { background: #ff006e; }
+        .btn-success { background: #10b981; }
         
-        .form-control { width: 100%; padding: 12px 15px; margin-bottom: 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-size: 0.95rem; transition: all 0.3s; }
-        .form-control:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0,242,254,0.1); }
-        .form-label { display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
-        .close-btn { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; transition: 0.3s;}
-        .close-btn:hover { color: var(--accent-pink); transform: rotate(90deg); }
-
-        .toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: rgba(20, 20, 30, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px 20px; color: #fff; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideInRight 0.4s ease forwards; }
-        .toast.success { border-left: 4px solid var(--accent-green); }
-        .toast.error { border-left: 4px solid var(--accent-pink); }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-        .empty-state { text-align: center; padding: 2rem; color: var(--text-secondary); font-style: italic; }
-        .student-details { font-size: 0.9rem; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px;}
-        .detail-row { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 8px;}
-        .detail-label { font-weight: 600; color: #e5e7eb; }
+        /* Forms */
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-size: 0.8rem; color: #b0b0d0; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: white; margin-bottom: 10px;}
+        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(135deg, #00d9ff, #a855f7); color: #0f0f0f; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-    
-    <header class="header">
-        <div class="header-left">
+
+    <div class="navbar">
+        <div class="logo-section">
             <h1>CampusConnect</h1>
-            <div class="header-subtitle">Maharaja Agrasen Institute of Technology • Premium Dashboard</div>
+            <p>Maharaja Agrasen Institute of Technology • Premium Dashboard</p>
         </div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <div class="user-profile">
-                <div>
-                    <div id="userName" style="font-weight: 600; font-size: 0.95rem;">Loading...</div>
-                    <div id="userRole" class="user-role-badge">Role</div>
-                </div>
+        <div class="user-info">
+            <div class="user-pill">
+                <div class="user-name" id="displayUserName">Loading...</div>
+                <div class="user-role" id="displayUserRole">ROLE</div>
             </div>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+            <button class="btn-logout" onclick="logout()">LOGOUT</button>
         </div>
-    </header>
+    </div>
 
-    <div class="container">
-        <div class="dashboard-grid" id="dashboardGrid">
-            <div class="col-12" style="text-align:center; padding: 50px; color: var(--accent-blue);">
-                <h2><span style="display:inline-block; animation: spin 1s linear infinite;">🔄</span> Syncing Secure Data...</h2>
+    <!-- ADMIN PANEL -->
+    <div id="adminPanel" class="panel">
+        <div class="stats-container">
+            <div class="stat-card">
+                <h2 id="totalUsers">0</h2>
+                <p>Total Users</p>
+            </div>
+            <div class="stat-card">
+                <h2 id="totalEvents">0</h2>
+                <p>Global Events</p>
+            </div>
+            <div class="stat-card">
+                <h2 id="totalRegistrations">0</h2>
+                <p>Registrations</p>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Global Event Monitoring</h3>
+                <div class="list-container" id="adminEventsList"></div>
+            </div>
+            
+            <div class="card">
+                <h3>Platform Organizers</h3>
+                <div class="list-container" id="organizersList"></div>
+            </div>
+
+            <div class="card" style="grid-column: span 2;">
+                <h3>Advanced User Control (All Users & Approvals)</h3>
+                <div class="list-container" id="allUsersList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"></div>
             </div>
         </div>
     </div>
 
-    <!-- Modals -->
-    <div class="modal-overlay" id="eventModal">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="font-size: 1.4rem;">Launch Event</h2>
-                <button class="close-btn" onclick="closeModal('eventModal')">×</button>
+    <!-- ORGANIZER PANEL -->
+    <div id="organizerPanel" class="panel">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Create New Event</h3>
+                <form id="createEventForm">
+                    <input type="text" id="evTitle" placeholder="Event Title" required>
+                    <textarea id="evDesc" placeholder="Description" rows="3"></textarea>
+                    <input type="date" id="evDate" required>
+                    <input type="text" id="evVenue" placeholder="Venue">
+                    <input type="number" id="evCapacity" placeholder="Capacity (e.g. 100)">
+                    <button type="submit" class="btn-submit">LAUNCH EVENT</button>
+                </form>
             </div>
-            <form id="createEventForm" onsubmit="handleCreateEvent(event)">
-                <label class="form-label">Event Title</label><input type="text" id="eventTitle" class="form-control" required>
-                <label class="form-label">Category</label><input type="text" id="eventCategory" class="form-control" required>
-                <label class="form-label">Date & Time</label><input type="datetime-local" id="eventDate" class="form-control" required>
-                <label class="form-label">Venue</label><input type="text" id="eventVenue" class="form-control" required>
-                <label class="form-label">Total Seats</label><input type="number" id="eventCapacity" class="form-control" value="100" min="1" required>
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Create & Publish</button>
-            </form>
+            <div class="card">
+                <h3>My Hosted Events</h3>
+                <div class="list-container" id="orgEventsList"></div>
+            </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="regModal">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="font-size: 1.4rem;" id="regModalTitle">Secure Seat</h2>
-                <button class="close-btn" onclick="closeModal('regModal')">×</button>
+    <!-- STUDENT PANEL -->
+    <div id="studentPanel" class="panel">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Upcoming Campus Events</h3>
+                <div class="list-container" id="studentEventsList"></div>
             </div>
-            <form id="regForm" onsubmit="handleRegister(event)">
-                <label class="form-label">Phone Number</label><input type="tel" id="regPhone" class="form-control" required>
-                <label class="form-label">Branch & Year</label><input type="text" id="regBranch" class="form-control" required>
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Confirm Registration</button>
-            </form>
+            <div class="card">
+                <h3>My Bookings</h3>
+                <div class="list-container" id="studentBookingsList"></div>
+            </div>
         </div>
     </div>
-    
-    <!-- Organizer: Participant Details Modal -->
-    <div class="modal-overlay" id="studentDetailsModal">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="font-size: 1.4rem;">Participant Details</h2>
-                <button class="close-btn" onclick="closeModal('studentDetailsModal')">×</button>
-            </div>
-            <div id="studentDetailsContent"></div>
-        </div>
-    </div>
-
-    <!-- Admin: Full User Profile Modal -->
-    <div class="modal-overlay" id="userProfileModal">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="font-size: 1.4rem;">User Full Profile</h2>
-                <button class="close-btn" onclick="closeModal('userProfileModal')">×</button>
-            </div>
-            <div id="userProfileContent"></div>
-        </div>
-    </div>
-
-    <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // LIVE SERVER FIX: Removed localhost
         const API_BASE = '/api';
-        let currentUser = null, globalEvents = [], globalRegistrations = [], globalUsers = [];
-        let selectedEventForReg = null;
+        let currentUser = null;
 
-        document.addEventListener('DOMContentLoaded', () => { currentUser = checkAuth(); if (currentUser) loadDashboard(); });
-
-        function checkAuth() { const user = localStorage.getItem('campusConnectUser'); if (!user) { window.location.href = 'login.html'; return null; } return JSON.parse(user); }
-        function logout() { if (confirm('Are you sure you want to securely log out?')) { localStorage.removeItem('campusConnectUser'); window.location.href = 'login.html'; } }
-
-        async function loadDashboard() {
-            document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userRole').textContent = currentUser.role;
+        // 1. INITIALIZATION & AUTH CHECK
+        function init() {
+            const userStr = localStorage.getItem('campusConnectUser');
+            if (!userStr) {
+                window.location.href = '/';
+                return;
+            }
+            currentUser = JSON.parse(userStr);
+            document.getElementById('displayUserName').textContent = currentUser.name;
+            document.getElementById('displayUserRole').textContent = currentUser.role === 'admin' ? 'SUPER ADMIN' : currentUser.role;
             
+            document.getElementById(`${currentUser.role}Panel`).classList.add('active-panel');
+
+            if (currentUser.role === 'admin') loadAdminData();
+            if (currentUser.role === 'organizer') loadOrgData();
+            if (currentUser.role === 'student') loadStudentData();
+        }
+
+        // 2. ADMIN CORE LOGIC (Perfected Approval System)
+        async function loadAdminData() {
             try {
-                const [evRes, regRes] = await Promise.all([fetch(`${API_BASE}/events`), fetch(`${API_BASE}/registrations`)]);
-                globalEvents = evRes.ok ? await evRes.json() : [];
-                globalRegistrations = regRes.ok ? await regRes.json() : [];
+                // Load Stats
+                const statsRes = await fetch(`${API_BASE}/admin/stats`);
+                const stats = await statsRes.json();
+                document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+                document.getElementById('totalEvents').textContent = stats.totalEvents || 0;
+                document.getElementById('totalRegistrations').textContent = stats.totalRegistrations || 0;
+
+                // Load Users
+                const usersRes = await fetch(`${API_BASE}/admin/all-users`);
+                const users = await usersRes.json();
                 
-                if(currentUser.role === 'admin' || currentUser.role === 'organizer'){
-                   try{ const uRes = await fetch(`${API_BASE}/admin/all-users`); if(uRes.ok) globalUsers = await uRes.json(); }catch(e){}
-                }
+                const allUsersList = document.getElementById('allUsersList');
+                const organizersList = document.getElementById('organizersList');
+                
+                allUsersList.innerHTML = '';
+                organizersList.innerHTML = '';
 
-                if (currentUser.role === 'admin') renderAdminView();
-                else if (currentUser.role === 'organizer') renderOrganizerView();
-                else renderStudentView();
-            } catch (err) { showToast('Sync failed. Check Server.', '⚠️', 'error'); }
+                users.forEach(u => {
+                    const isApproved = u.is_approved === 1;
+                    const isRoot = u.email === 'shubham11tha@gmail.com' || u.id === 1;
+
+                    let statusBadge = '';
+                    let actionBtns = '';
+
+                    // PERFECT COORDINATION LOGIC:
+                    if (isRoot) {
+                        statusBadge = `<span style="color: #a855f7; font-weight: bold;">SUPER ADMIN</span>`;
+                    } else if (!isApproved) {
+                        // Pending Users
+                        statusBadge = `<span style="color: #ffcc00; font-weight: bold;">⚠️ Pending Approval</span>`;
+                        actionBtns = `
+                            <button class="btn-action btn-success" onclick="approveUser(${u.id})">APPROVE</button>
+                            <button class="btn-action btn-danger" onclick="kickUser(${u.id})">REJECT</button>
+                        `;
+                    } else {
+                        // Active Users
+                        statusBadge = `<span style="color: #10b981;">Active ${u.role}</span>`;
+                        if (u.role !== 'admin') actionBtns += `<button class="btn-action" style="background:#a855f7" onclick="promoteRole(${u.id}, 'admin')">MAKE ADMIN</button>`;
+                        if (u.role !== 'organizer') actionBtns += `<button class="btn-action" style="background:#f59e0b" onclick="promoteRole(${u.id}, 'organizer')">MAKE ORG</button>`;
+                        if (u.role !== 'student') actionBtns += `<button class="btn-action" style="background:#f59e0b" onclick="demoteUser(${u.id})">MAKE STUDENT</button>`;
+                        actionBtns += `<button class="btn-action btn-danger" onclick="kickUser(${u.id})">KICK</button>`;
+                    }
+
+                    // Render All Users
+                    allUsersList.innerHTML += `
+                        <div class="list-item">
+                            <div>
+                                <h4 style="color:${!isApproved ? '#ffcc00' : 'white'}">${u.name}</h4>
+                                <p>📧 ${u.email} <br> <strong>Role:</strong> ${u.role.toUpperCase()} <br> ${statusBadge}</p>
+                            </div>
+                            <div class="action-buttons">${actionBtns}</div>
+                        </div>
+                    `;
+
+                    // Render Active Organizers ONLY
+                    if (u.role === 'organizer' && isApproved) {
+                        organizersList.innerHTML += `
+                            <div class="list-item">
+                                <div><h4>${u.name}</h4><p>📧 ${u.email}</p><span style="color: #10b981; font-size:0.8rem">Active Organizer</span></div>
+                                <div class="action-buttons"><button class="btn-action" style="background:#f59e0b" onclick="demoteUser(${u.id})">REMOVE ORG</button></div>
+                            </div>
+                        `;
+                    }
+                });
+
+                loadAdminEvents();
+            } catch (err) { console.error(err); }
         }
 
-        // Feature For Organizer: View specific event participant details
-        function viewStudentDetails(studentId, regId) {
-            const student = globalUsers.find(u => u.id === studentId);
-            const reg = globalRegistrations.find(r => r.id === regId);
-            if(!student || !reg) { showToast('Details not found', '⚠️', 'error'); return; }
-
-            const regTime = new Date(reg.registered_at).toLocaleString();
-            document.getElementById('studentDetailsContent').innerHTML = `
-                <div class="student-details">
-                    <div class="detail-row"><span class="detail-label">Name:</span> <span>${student.name}</span></div>
-                    <div class="detail-row"><span class="detail-label">Email:</span> <span style="color:var(--accent-blue)">${student.email}</span></div>
-                    <div class="detail-row"><span class="detail-label">Phone:</span> <span style="color:var(--accent-yellow)">${reg.phone || 'N/A'}</span></div>
-                    <div class="detail-row"><span class="detail-label">Branch/Year:</span> <span>${reg.branch || 'N/A'}</span></div>
-                    <div class="detail-row"><span class="detail-label">Event Registered:</span> <span>${reg.event_title}</span></div>
-                    <div class="detail-row"><span class="detail-label">Registration Time:</span> <span>${regTime}</span></div>
-                </div>
-                <button class="btn btn-primary" style="margin-top: 20px;" onclick="closeModal('studentDetailsModal')">Close View</button>
-            `;
-            openModal('studentDetailsModal');
+        async function loadAdminEvents() {
+            const res = await fetch(`${API_BASE}/events`);
+            const events = await res.json();
+            const list = document.getElementById('adminEventsList');
+            list.innerHTML = '';
+            events.forEach(ev => {
+                list.innerHTML += `
+                    <div class="list-item">
+                        <div><h4>${ev.title}</h4><p>📅 ${ev.date} | 📍 ${ev.venue}</p></div>
+                        <button class="btn-action btn-danger" onclick="deleteEvent(${ev.id})">DELETE</button>
+                    </div>
+                `;
+            });
         }
 
-        // Feature For Admin: View full profile of any user
-        function viewUserProfile(userId) {
-            const user = globalUsers.find(u => u.id === userId);
-            if(!user) { showToast('User details not found', '⚠️', 'error'); return; }
-
-            // Find if user has any registrations to extract phone and branch (if they provided it)
-            const userRegs = globalRegistrations.filter(r => r.student_id === userId);
-            const latestReg = userRegs.length > 0 ? userRegs[0] : null;
-            
-            const phone = latestReg ? (latestReg.phone || 'N/A') : 'No Bookings (Not Provided)';
-            const branch = latestReg ? (latestReg.branch || 'N/A') : 'No Bookings (Not Provided)';
-
-            document.getElementById('userProfileContent').innerHTML = `
-                <div class="student-details">
-                    <div class="detail-row"><span class="detail-label">Full Name:</span> <span>${user.name}</span></div>
-                    <div class="detail-row"><span class="detail-label">Email Address:</span> <span style="color:var(--accent-blue)">${user.email}</span></div>
-                    <div class="detail-row"><span class="detail-label">Platform Role:</span> <span style="text-transform:uppercase;">${user.role}</span></div>
-                    <div class="detail-row"><span class="detail-label">Account Status:</span> <span style="color:${user.is_approved ? 'var(--accent-green)' : 'var(--accent-pink)'}; font-weight:bold;">${user.is_approved ? 'Active' : 'Pending'}</span></div>
-                    <div class="detail-row"><span class="detail-label">Phone Number:</span> <span style="color:var(--accent-yellow)">${phone}</span></div>
-                    <div class="detail-row"><span class="detail-label">College Branch/Year:</span> <span>${branch}</span></div>
-                    <div class="detail-row"><span class="detail-label">Total Events Joined:</span> <span>${userRegs.length} Events</span></div>
-                </div>
-                <button class="btn btn-primary" style="margin-top: 20px;" onclick="closeModal('userProfileModal')">Close Profile</button>
-            `;
-            openModal('userProfileModal');
+        // 3. ADMIN ACTION FUNCTIONS
+        async function approveUser(id) {
+            if(confirm("Approve this user?")) {
+                await fetch(`${API_BASE}/admin/approve-user/${id}`, { method: 'POST' });
+                loadAdminData();
+            }
+        }
+        async function promoteRole(id, role) {
+            if(confirm(`Promote to ${role}?`)) {
+                await fetch(`${API_BASE}/admin/make-${role}/${id}`, { method: 'POST' });
+                loadAdminData();
+            }
+        }
+        async function demoteUser(id) {
+            if(confirm("Demote to Student?")) {
+                await fetch(`${API_BASE}/admin/unadmin/${id}`, { method: 'POST' });
+                loadAdminData();
+            }
+        }
+        async function kickUser(id) {
+            if(confirm("Permanently Kick User?")) {
+                await fetch(`${API_BASE}/admin/users/${id}`, { method: 'DELETE' });
+                loadAdminData();
+            }
+        }
+        async function deleteEvent(id) {
+            if(confirm("Delete Event?")) {
+                await fetch(`${API_BASE}/events/${id}`, { method: 'DELETE' });
+                if(currentUser.role === 'admin') loadAdminData();
+                if(currentUser.role === 'organizer') loadOrgData();
+            }
         }
 
-        // ================= SUPER ADMIN VIEW =================
-        async function renderAdminView() {
-            const grid = document.getElementById('dashboardGrid');
-            let stats = { totalUsers: 0, totalEvents: globalEvents.length, totalRegistrations: globalRegistrations.length };
-            let pendingUsers = [], allUsers = globalUsers;
-            
+        // 4. ORGANIZER LOGIC
+        async function loadOrgData() {
+            const res = await fetch(`${API_BASE}/events`);
+            const events = await res.json();
+            const list = document.getElementById('orgEventsList');
+            list.innerHTML = '';
+            events.filter(ev => ev.organizer_id === currentUser.id).forEach(ev => {
+                list.innerHTML += `
+                    <div class="list-item">
+                        <div><h4>${ev.title}</h4><p>📅 ${ev.date} | 👥 Cap: ${ev.capacity}</p></div>
+                        <button class="btn-action btn-danger" onclick="deleteEvent(${ev.id})">DELETE</button>
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById('createEventForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                title: document.getElementById('evTitle').value,
+                description: document.getElementById('evDesc').value,
+                date: document.getElementById('evDate').value,
+                venue: document.getElementById('evVenue').value,
+                capacity: document.getElementById('evCapacity').value,
+                organizer_id: currentUser.id
+            };
             try {
-                const sRes = await fetch(`${API_BASE}/admin/stats`); if (sRes.ok) stats = await sRes.json();
-                const pRes = await fetch(`${API_BASE}/admin/pending-users`); if (pRes.ok) pendingUsers = await pRes.json();
-            } catch (e) {}
+                await fetch(`${API_BASE}/events`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                alert("Event Created!");
+                e.target.reset();
+                loadOrgData();
+            } catch(err) { alert("Failed to create event"); }
+        });
 
-            const eventsHtml = globalEvents.length ? globalEvents.map((ev, i) => {
-                const regs = globalRegistrations.filter(r => r.event_id === ev.id).length;
-                return `<div class="list-item" style="animation-delay: ${i*0.1}s">
-                    <div><div class="item-title">${ev.title}</div><div class="item-meta"><span>📍 ${ev.venue}</span><span>👥 ${regs}/${ev.capacity} Seats</span></div></div>
-                    <div class="item-actions"><button class="btn btn-sm btn-danger" onclick="deleteEvent(${ev.id})">Delete</button></div>
-                </div>`;
-            }).join('') : `<div class="empty-state">No live events available.</div>`;
+        // 5. STUDENT LOGIC
+        async function loadStudentData() {
+            const evRes = await fetch(`${API_BASE}/events`);
+            const events = await evRes.json();
+            
+            const regRes = await fetch(`${API_BASE}/registrations`);
+            const regs = await regRes.json();
+            const myRegs = regs.filter(r => r.user_id === currentUser.id);
 
-            const regTrackerHtml = globalRegistrations.length ? globalRegistrations.map((r, i) => `
-                <div class="list-item" style="animation-delay: ${i*0.1}s">
-                    <div><div class="item-title"><span style="color:var(--accent-green)">${r.student_name}</span> ➔ <span style="color:var(--accent-blue)">${r.event_title}</span></div></div>
-                    <div class="item-actions">
-                        <button class="btn btn-sm btn-info" onclick="viewStudentDetails(${r.student_id}, ${r.id})">Details</button>
-                        <button class="btn btn-sm btn-danger" onclick="cancelRegistration(${r.id})">Remove</button>
-                    </div>
-                </div>
-            `).join('') : `<div class="empty-state">No student registrations found.</div>`;
+            const sList = document.getElementById('studentEventsList');
+            const bList = document.getElementById('studentBookingsList');
+            sList.innerHTML = ''; bList.innerHTML = '';
 
-            // ORGANIZER SPECIFIC LIST FOR ADMIN
-            const organizersList = allUsers.filter(u => u.role === 'organizer');
-            const organizersHtml = organizersList.length ? organizersList.map((u, i) => `
-                <div class="list-item" style="animation-delay: ${i*0.1}s; border-color: var(--accent-green);">
-                    <div><div class="item-title">${u.name}</div><div class="item-meta"><span>📧 ${u.email}</span><span style="color:var(--accent-green); font-weight:bold;">Active Organizer</span></div></div>
-                    <div class="item-actions">
-                        <button class="btn btn-sm btn-info" onclick="viewUserProfile(${u.id})">Profile</button>
-                        <button class="btn btn-sm btn-warn" onclick="demoteUser(${u.id})">Remove Organizer</button>
-                    </div>
-                </div>
-            `).join('') : `<div class="empty-state">No Organizers assigned yet.</div>`;
-
-            // ALL USERS CONTROL FOR ADMIN
-            const allUsersHtml = allUsers.map((u, i) => {
-                const isSuper = u.id === 1;
-                let actionBtns = `<button class="btn btn-sm btn-info" style="margin-right:4px;" onclick="viewUserProfile(${u.id})">Profile</button> `;
-                
-                if (isSuper) {
-                    actionBtns += `<span style="color:var(--accent-pink); font-weight:bold; margin-left:8px;">ROOT ADMIN</span>`;
-                } else if (u.role === 'admin') {
-                    actionBtns += `<button class="btn btn-sm btn-warn" style="margin-right:4px;" onclick="demoteUser(${u.id})">Demote Admin</button> <button class="btn btn-sm btn-danger" onclick="kickUser(${u.id})">Kick</button>`;
-                } else if (u.role === 'organizer') {
-                    actionBtns += `<button class="btn btn-sm btn-admin" style="margin-right:4px;" onclick="makeAdmin(${u.id})">Make Admin</button> <button class="btn btn-sm btn-warn" style="margin-right:4px;" onclick="demoteUser(${u.id})">Remove Org</button> <button class="btn btn-sm btn-danger" onclick="kickUser(${u.id})">Kick</button>`;
+            events.forEach(ev => {
+                const isBooked = myRegs.find(r => r.event_id === ev.id);
+                if(isBooked) {
+                    bList.innerHTML += `<div class="list-item"><div><h4>${ev.title}</h4><p>📅 ${ev.date}</p><span style="color:#10b981">TICKET CONFIRMED</span></div></div>`;
                 } else {
-                    actionBtns += `<button class="btn btn-sm btn-approve" style="margin-right:4px;" onclick="makeOrganizer(${u.id})">Make Organizer</button> <button class="btn btn-sm btn-admin" style="margin-right:4px;" onclick="makeAdmin(${u.id})">Make Admin</button> <button class="btn btn-sm btn-danger" onclick="kickUser(${u.id})">Kick</button>`;
+                    sList.innerHTML += `
+                        <div class="list-item">
+                            <div><h4>${ev.title}</h4><p>📅 ${ev.date} | 📍 ${ev.venue}</p></div>
+                            <button class="btn-action" style="background:#00d9ff; color:#0f0f0f;" onclick="bookTicket(${ev.id})">BOOK NOW</button>
+                        </div>
+                    `;
                 }
-
-                return `<div class="list-item" style="animation-delay: ${i*0.05}s">
-                    <div><div class="item-title">${u.name}</div><div class="item-meta"><span>📧 ${u.email}</span><span style="color:var(--text-secondary); text-transform:uppercase;">${u.role}</span></div></div>
-                    <div class="item-actions">${actionBtns}</div>
-                </div>`;
-            }).join('');
-
-            grid.innerHTML = `
-                <div class="grid-item col-12" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><h2 class="card-title" style="font-size:1.4rem;">Command Center</h2><p style="color:var(--text-secondary); font-size:0.9rem;">Absolute root access</p></div>
-                    <button class="btn btn-primary" style="width:auto; padding: 12px 25px;" onclick="openModal('eventModal')">+ Launch New Event</button>
-                </div>
-                <div class="grid-item col-4" style="animation-delay: 0.1s"><div class="card-header"><span class="card-title">Total Users</span></div><div class="card-value">${stats.totalUsers}</div></div>
-                <div class="grid-item col-4" style="animation-delay: 0.2s"><div class="card-header"><span class="card-title">Live Events</span></div><div class="card-value">${stats.totalEvents}</div></div>
-                <div class="grid-item col-4" style="animation-delay: 0.3s"><div class="card-header"><span class="card-title">Global Bookings</span></div><div class="card-value">${stats.totalRegistrations}</div></div>
-                
-                <div class="grid-item col-6" style="animation-delay: 0.4s"><div class="card-header"><span class="card-title">Global Event Monitoring</span></div><div class="scrollable-list">${eventsHtml}</div></div>
-                <div class="grid-item col-6" style="animation-delay: 0.5s"><div class="card-header"><span class="card-title">Participation Tracker</span></div><div class="scrollable-list">${regTrackerHtml}</div></div>
-                
-                <div class="grid-item col-6" style="animation-delay: 0.6s"><div class="card-header"><span class="card-title">Platform Organizers</span></div><div class="scrollable-list">${organizersHtml}</div></div>
-                <div class="grid-item col-6" style="animation-delay: 0.7s"><div class="card-header"><span class="card-title">Advanced User Control (All Users)</span></div><div class="scrollable-list">${allUsersHtml}</div></div>
-            `;
-        }
-        
-        // ================= ORGANIZER VIEW =================
-        function renderOrganizerView() {
-            const grid = document.getElementById('dashboardGrid');
-            const myEvents = globalEvents.filter(e => e.organizer_id === currentUser.id);
-            const myEventIds = myEvents.map(e => e.id);
-            const myEventRegs = globalRegistrations.filter(r => myEventIds.includes(r.event_id));
-
-            const eventsHtml = myEvents.length ? myEvents.map((ev, i) => {
-                const regs = globalRegistrations.filter(r => r.event_id === ev.id).length;
-                return `<div class="list-item" style="animation-delay: ${i*0.1}s">
-                    <div><div class="item-title">${ev.title} <span class="tag tag-coding">${ev.category || 'General'}</span></div><div class="item-meta"><span>📍 ${ev.venue}</span><span>👥 ${regs}/${ev.capacity} Seats</span></div></div>
-                    <div class="item-actions"><button class="btn btn-sm btn-danger" onclick="deleteEvent(${ev.id})">Delete Event</button></div>
-                </div>`;
-            }).join('') : `<div class="empty-state">You haven't launched any events yet.</div>`;
-
-            const regTrackerHtml = myEventRegs.length ? myEventRegs.map((r, i) => `
-                <div class="list-item" style="animation-delay: ${i*0.1}s">
-                    <div><div class="item-title"><span style="color:var(--accent-green)">${r.student_name}</span> ➔ <span style="color:var(--accent-blue)">${r.event_title}</span></div></div>
-                    <div class="item-actions">
-                        <button class="btn btn-sm btn-info" onclick="viewStudentDetails(${r.student_id}, ${r.id})">Participant Profile</button>
-                        <button class="btn btn-sm btn-danger" onclick="cancelRegistration(${r.id})">Remove Seat</button>
-                    </div>
-                </div>
-            `).join('') : `<div class="empty-state">No registrations for your events yet.</div>`;
-
-            grid.innerHTML = `
-                <div class="grid-item col-12" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><h2 class="card-title" style="font-size:1.4rem;">Organizer Workspace</h2><p style="color:var(--text-secondary); font-size:0.9rem;">Manage your events and participants securely.</p></div>
-                    <button class="btn btn-primary" style="width:auto; padding: 12px 25px;" onclick="openModal('eventModal')">+ Launch New Event</button>
-                </div>
-                
-                <div class="grid-item col-6" style="animation-delay: 0.3s"><div class="card-header"><span class="card-title">My Event Monitoring</span></div><div class="scrollable-list">${eventsHtml}</div></div>
-                <div class="grid-item col-6" style="animation-delay: 0.4s"><div class="card-header"><span class="card-title">Participant Tracker</span></div><div class="scrollable-list">${regTrackerHtml}</div></div>
-            `;
+            });
         }
 
-        // ================= STUDENT VIEW =================
-        function renderStudentView() {
-            const grid = document.getElementById('dashboardGrid');
-            const myRegs = globalRegistrations.filter(r => r.student_id === currentUser.id);
-            const availableEvents = globalEvents.filter(e => !myRegs.some(r => r.event_id === e.id));
-
-            const myRegHtml = myRegs.length ? myRegs.map(r => `<div class="list-item"><div><div class="item-title">${r.event_title}</div><div class="item-meta"><span>📍 Branch: ${r.branch||'-'}</span></div></div></div>`).join('') : '<div class="empty-state">Not registered for any events yet.</div>';
-            const availableHtml = availableEvents.length ? availableEvents.map(e => {
-                const regs = globalRegistrations.filter(r => r.event_id === e.id).length;
-                return `<div class="list-item"><div><div class="item-title">${e.title}</div><div class="item-meta"><span>📅 ${new Date(e.date).toLocaleDateString()}</span><span>👥 ${e.capacity - regs}/${e.capacity} Left</span></div></div>
-                <button class="btn btn-sm btn-approve" onclick="openRegModal(${e.id}, '${e.title}')">Register</button></div>`;
-            }).join('') : '<div class="empty-state">No upcoming events.</div>';
-
-            grid.innerHTML = `
-                <div class="grid-item col-12"><div class="card-header"><span class="card-title">My Bookings</span></div><div class="card-value">${myRegs.length}</div></div>
-                <div class="grid-item col-6"><div class="card-header"><span class="card-title">Registered Events</span></div><div class="scrollable-list">${myRegHtml}</div></div>
-                <div class="grid-item col-6"><div class="card-header"><span class="card-title">Explore Live Events</span></div><div class="scrollable-list">${availableHtml}</div></div>
-            `;
+        async function bookTicket(eventId) {
+            try {
+                const res = await fetch(`${API_BASE}/registrations`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ userId: currentUser.id, eventId: eventId })
+                });
+                const data = await res.json();
+                if(res.ok) { alert("Ticket Booked!"); loadStudentData(); }
+                else { alert(data.error); }
+            } catch(err) { alert("Booking failed"); }
         }
 
-        // Modal & Forms Logic
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); if(id !== 'studentDetailsModal' && id !== 'userProfileModal') document.querySelectorAll('form').forEach(f=>f.reset()); }
-        function openRegModal(evId, evTitle) { selectedEventForReg = evId; document.getElementById('regModalTitle').textContent = `Booking: ${evTitle}`; openModal('regModal'); }
-
-        async function handleCreateEvent(e) { e.preventDefault(); const body = { title: document.getElementById('eventTitle').value, category: document.getElementById('eventCategory').value, date: document.getElementById('eventDate').value, venue: document.getElementById('eventVenue').value, capacity: document.getElementById('eventCapacity').value, organizer_id: currentUser.id };
-            try { const res = await fetch(`${API_BASE}/events`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }); if(res.ok){ showToast('Event Launched! 🚀', '✓', 'success'); closeModal('eventModal'); loadDashboard(); } }catch(e){} }
-        
-        async function handleRegister(e) { e.preventDefault(); const body = { userId: currentUser.id, eventId: selectedEventForReg, phone: document.getElementById('regPhone').value, branch: document.getElementById('regBranch').value };
-            try { const res = await fetch(`${API_BASE}/registrations`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }); if(res.ok){ showToast('Seat Secured! 🎉', '✓', 'success'); closeModal('regModal'); loadDashboard(); }else{ showToast('Event Full or Already Registered.', '⚠️', 'error'); } }catch(e){} }
-
-        // Core Actions
-        async function deleteEvent(id) { if(confirm('Delete event permanently?')) { await fetch(`${API_BASE}/events/${id}`, {method:'DELETE'}); showToast('Event Deleted.', '✓'); loadDashboard(); } }
-        async function cancelRegistration(id) { if(confirm('Remove student registration?')) { await fetch(`${API_BASE}/admin/registrations/${id}`, {method:'DELETE'}); showToast('Registration Removed.', '✓'); loadDashboard(); } }
-        
-        // Admin Special Actions
-        async function approveUser(id) { await fetch(`${API_BASE}/admin/approve-user/${id}`, {method:'POST'}); showToast('User Approved.', '✓'); loadDashboard(); }
-        async function makeOrganizer(id) { if(confirm('Promote to Organizer?')) { await fetch(`${API_BASE}/admin/make-organizer/${id}`, {method:'POST'}); showToast('Promoted to Organizer!', '✓'); loadDashboard(); } }
-        async function makeAdmin(id) { if(confirm('Promote to Admin?')) { await fetch(`${API_BASE}/admin/make-admin/${id}`, {method:'POST'}); showToast('Promoted to Admin!', '✓'); loadDashboard(); } }
-        async function demoteUser(id) { if(confirm('Demote user to Student?')) { await fetch(`${API_BASE}/admin/unadmin/${id}`, {method:'POST'}); showToast('Demoted to Student!', '✓'); loadDashboard(); } }
-        async function kickUser(id) { if(confirm('Kick User and Delete Data?')) { const r=await fetch(`${API_BASE}/admin/users/${id}`, {method:'DELETE'}); if(r.ok){ showToast('User Kicked.', '✓'); loadDashboard(); }else{ showToast('Cannot kick Root Admin', '⚠️', 'error'); } } }
-
-        function showToast(msg, icon='✓', type='success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div'); toast.className = `toast ${type}`;
-            toast.innerHTML = `<span style="font-size:1.2rem;">${icon}</span><span style="flex:1;">${msg}</span>`;
-            container.appendChild(toast); setTimeout(() => toast.remove(), 4000);
+        function logout() {
+            localStorage.removeItem('campusConnectUser');
+            window.location.href = '/';
         }
+
+        window.onload = init;
     </script>
 </body>
 </html>
