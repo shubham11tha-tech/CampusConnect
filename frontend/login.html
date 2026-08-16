@@ -12,8 +12,9 @@
         .login-card p { color: #b0b0d0; font-size: 0.85rem; margin-bottom: 2rem; }
         .form-group { margin-bottom: 1.2rem; }
         label { display: block; font-size: 0.8rem; color: #b0b0d0; margin-bottom: 5px; }
-        input { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: white; font-size: 0.95rem; }
-        input:focus { outline: none; border-color: #00d9ff; }
+        input, select { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: white; font-size: 0.95rem; }
+        input:focus, select:focus { outline: none; border-color: #00d9ff; }
+        select option { background: #1a1a1a; color: white; }
         .btn-submit { width: 100%; padding: 12px; background: linear-gradient(135deg, #00d9ff, #a855f7); color: #0f0f0f; border: none; border-radius: 0.5rem; font-weight: bold; cursor: pointer; margin-top: 1rem; font-size: 1rem; transition: 0.3s; }
         .btn-submit:hover { opacity: 0.9; }
         .redirect-link { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #b0b0d0; }
@@ -34,6 +35,14 @@
             <div class="form-group">
                 <label>Password</label>
                 <input type="password" id="password" required placeholder="Enter your password">
+            </div>
+            <div class="form-group">
+                <label>Select Role</label>
+                <select id="loginRole">
+                    <option value="student">Student</option>
+                    <option value="organizer">Organizer</option>
+                    <option value="admin">Admin / Super Admin</option>
+                </select>
             </div>
             <button type="submit" class="btn-submit">LOGIN</button>
         </form>
