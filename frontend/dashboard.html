@@ -159,28 +159,25 @@
         const API_BASE = '/api';
         let currentUser = null;
 
-        // 1. INITIALIZATION & AUTH CHECK
         function init() {
             const userStr = localStorage.getItem('campusConnectUser');
             if (!userStr) {
-                window.location.href = '/';
+                window.location.href = '/login.html';
                 return;
             }
             currentUser = JSON.parse(userStr);
             document.getElementById('displayUserName').textContent = currentUser.name;
             
-            // Secure Root Check via specific email only
             const isRoot = currentUser.email === 'shubham11tha@gmail.com';
             document.getElementById('displayUserRole').textContent = isRoot ? 'SUPER ADMIN' : currentUser.role;
             
-            document.getElementById(`${currentUser.role}Panel`).classList.add('active-panel');
+            document.getElementById(`${currentUser.role}Panel`)?.classList.add('active-panel');
 
             if (currentUser.role === 'admin') loadAdminData();
             if (currentUser.role === 'organizer') loadOrgData();
             if (currentUser.role === 'student') loadStudentData();
         }
 
-        // 2. ADMIN CORE LOGIC
         async function loadAdminData() {
             try {
                 const statsRes = await fetch(`${API_BASE}/admin/stats`);
@@ -260,7 +257,6 @@
             });
         }
 
-        // 3. ADMIN ACTION FUNCTIONS
         async function approveUser(id) {
             if(confirm("Approve this user?")) {
                 await fetch(`${API_BASE}/admin/approve-user/${id}`, { method: 'POST' });
@@ -293,7 +289,6 @@
             }
         }
 
-        // 4. ORGANIZER LOGIC
         async function loadOrgData() {
             const res = await fetch(`${API_BASE}/events`);
             const events = await res.json();
@@ -327,7 +322,6 @@
             } catch(err) { alert("Failed to create event"); }
         });
 
-        // 5. STUDENT LOGIC
         async function loadStudentData() {
             const evRes = await fetch(`${API_BASE}/events`);
             const events = await evRes.json();
@@ -369,7 +363,7 @@
 
         function logout() {
             localStorage.removeItem('campusConnectUser');
-            window.location.href = '/';
+            window.location.href = '/login.html';
         }
 
         window.onload = init;

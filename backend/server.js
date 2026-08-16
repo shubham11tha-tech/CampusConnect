@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static frontend files correctly from backend folder perspective
+// Serve static frontend files from sibling frontend folder
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // PostgreSQL Cloud Database Connection (Neon)
