@@ -8,13 +8,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static frontend files (Correct path from backend folder)
+// Serve static frontend files correctly from backend folder perspective
 app.use(express.static(path.join(__dirname, '../frontend')));
-
-// Fallback to frontend login.html
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/login.html'));
-});
 
 // PostgreSQL Cloud Database Connection (Neon)
 const pool = new Pool({
@@ -22,7 +17,6 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// Initialize Database Tables with is_approved column
 async function initDB() {
     try {
         await pool.query(`
@@ -60,14 +54,10 @@ async function initDB() {
 initDB();
 
 // --- AUTHENTICATION ROUTES ---
-
-// Register
 app.post('/api/register', async (req, res) => {
     const { name, email, password, role } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        
-        // Organizers require admin approval (is_approved = 0), others approved by default (1)
         const isApproved = (role === 'organizer') ? 0 : 1;
 
         const newUserData = await pool.query(
@@ -81,7 +71,6 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// Login
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -96,7 +85,6 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ error: "Invalid email or password." });
         }
 
-        // Check if organizer is approved
         if (user.role === 'organizer' && user.is_approved === 0) {
             return res.status(403).json({ error: "Your account is pending Admin approval." });
         }
@@ -108,8 +96,6 @@ app.post('/api/login', async (req, res) => {
 });
 
 // --- ADMIN ROUTES ---
-
-// Get Stats
 app.get('/api/admin/stats', async (req, res) => {
     try {
         const usersCount = await pool.query('SELECT COUNT(*) FROM Users');
@@ -126,7 +112,6 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 });
 
-// Get All Users
 app.get('/api/admin/all-users', async (req, res) => {
     try {
         const users = await pool.query('SELECT id, name, email, role, is_approved FROM Users ORDER BY id ASC');
@@ -136,7 +121,6 @@ app.get('/api/admin/all-users', async (req, res) => {
     }
 });
 
-// Approve User
 app.post('/api/admin/approve-user/:id', async (req, res) => {
     try {
         await pool.query('UPDATE Users SET is_approved = 1 WHERE id = $1', [req.params.id]);
@@ -146,7 +130,6 @@ app.post('/api/admin/approve-user/:id', async (req, res) => {
     }
 });
 
-// Promote Role (Make Admin / Make Organizer)
 app.post('/api/admin/make-admin/:id', async (req, res) => {
     try {
         await pool.query("UPDATE Users SET role = 'admin', is_approved = 1 WHERE id = $1", [req.params.id]);
@@ -161,11 +144,9 @@ app.post('/api/admin/make-organizer/:id', async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Failed." }); }
 });
 
-// Demote to Student (Unadmin / Remove Org)
 app.post('/api/admin/unadmin/:id', async (req, res) => {
     try {
         const targetUser = await pool.query("SELECT email FROM Users WHERE id = $1", [req.params.id]);
-        // Strict protection for main root email only
         if (targetUser.rows[0]?.email === 'shubham11tha@gmail.com') {
             return res.status(403).json({ error: "Cannot modify root admin permissions." });
         }
@@ -174,7 +155,6 @@ app.post('/api/admin/unadmin/:id', async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Failed." }); }
 });
 
-// Delete/Kick User
 app.delete('/api/admin/users/:id', async (req, res) => {
     try {
         const targetUser = await pool.query("SELECT email FROM Users WHERE id = $1", [req.params.id]);
@@ -187,7 +167,6 @@ app.delete('/api/admin/users/:id', async (req, res) => {
 });
 
 // --- EVENT ROUTES ---
-
 app.get('/api/events', async (req, res) => {
     try {
         const events = await pool.query('SELECT * FROM CollegeEvents ORDER BY id DESC');
@@ -214,8 +193,7 @@ app.delete('/api/events/:id', async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Failed." }); }
 });
 
-// --- REGISTRATION / TICKETING ROUTES ---
-
+// --- REGISTRATION ROUTES ---
 app.get('/api/registrations', async (req, res) => {
     try {
         const regs = await pool.query('SELECT * FROM Registrations');
@@ -235,8 +213,12 @@ app.post('/api/registrations', async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Registration failed." }); }
 });
 
-// Fallback to frontend index.html
-// Fallback to frontend index.html
+// Fallback to frontend login.html
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+    res.sendFile(path.join(__dirname, '../frontend/login.html'));
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
